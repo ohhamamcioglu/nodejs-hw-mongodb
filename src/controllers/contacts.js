@@ -2,7 +2,23 @@ import { getAllContacts, getContactById, createContact, updateContact, deleteCon
 import createHttpError from 'http-errors';
 
 export const getContactsController = async (req, res) => {
-  const contacts = await getAllContacts();
+  const page = parseInt(req.query.page, 10);
+  const perPage = parseInt(req.query.perPage, 10);
+  const { sortBy, sortOrder, type, isFavourite } = req.query;
+
+  const filter = {};
+  if (type) filter.type = type;
+  if (isFavourite !== undefined) {
+    filter.isFavourite = isFavourite === 'true';
+  }
+
+  const contacts = await getAllContacts({
+    page,
+    perPage,
+    sortBy,
+    sortOrder,
+    filter,
+  });
 
   res.status(200).json({
     status: 200,
