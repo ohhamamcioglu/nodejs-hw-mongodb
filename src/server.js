@@ -23,7 +23,31 @@ export const setupServer = () => {
     }),
   );
 
-  // Routes
+  // Public Routes
+  app.get('/', (req, res) => {
+    res.json({
+      message: 'Node.js MongoDB API - hw5-auth',
+      version: '1.0.0',
+      status: 'API is running successfully!',
+      endpoints: {
+        auth: {
+          register: 'POST /auth/register',
+          login: 'POST /auth/login', 
+          refresh: 'POST /auth/refresh',
+          logout: 'POST /auth/logout'
+        },
+        contacts: {
+          list: 'GET /contacts (Protected)',
+          create: 'POST /contacts (Protected)',
+          getById: 'GET /contacts/:id (Protected)',
+          update: 'PATCH /contacts/:id (Protected)',
+          delete: 'DELETE /contacts/:id (Protected)'
+        }
+      }
+    });
+  });
+
+  // Protected Routes
   app.use(authRouter);
   app.use(contactsRouter);
 
