@@ -1,8 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import pino from 'pino-http';
+import cookieParser from 'cookie-parser';
 
 import contactsRouter from './routes/contacts.js';
+import authRouter from './routes/auth.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 
@@ -12,6 +14,7 @@ export const setupServer = () => {
   // Middleware
   app.use(express.json());
   app.use(cors());
+  app.use(cookieParser());
   app.use(
     pino({
       transport: {
@@ -21,6 +24,7 @@ export const setupServer = () => {
   );
 
   // Routes
+  app.use(authRouter);
   app.use(contactsRouter);
 
   // 404 handler for non-existing routes
