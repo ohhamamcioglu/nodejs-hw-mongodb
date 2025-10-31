@@ -1,18 +1,31 @@
-# Node.js MongoDB Contacts API
+# Node.js MongoDB API - hw7-swagger
 
-Bu proje, MongoDB veritabanı kullanarak iletişim (contacts) yönetimi için RESTful API sunan bir Node.js uygulamasıdır.
+Bu proje, MongoDB veritabanı kullanarak iletişim (contacts) yönetimi için RESTful API sunan ve **Swagger/OpenAPI 3.1.0** dokümantasyonu ile tam entegre edilmiş bir Node.js uygulamasıdır.
 
 ## 🚀 Özellikler
 
+### 🔧 **Temel Özellikler**
 - ✅ **Express.js** web framework
 - ✅ **MongoDB** veritabanı (Mongoose ODM)
 - ✅ **RESTful API** endpoints
+- ✅ **JWT Authentication** sistemi
+- ✅ **Session management** 
+- ✅ **Email service** (Brevo SMTP)
+- ✅ **File upload** (Cloudinary integration)
 - ✅ **CORS** desteği
 - ✅ **Pino** logging
 - ✅ **ESLint** kod kalitesi
 - ✅ **Prettier** kod formatlama
 - ✅ **ES6 Modules** desteği
 - ✅ **Environment variables** yapılandırması
+
+### 📚 **Swagger/OpenAPI Dokümantasyon**
+- ✅ **OpenAPI 3.1.0** spesifikasyonu
+- ✅ **Swagger UI** interactive interface
+- ✅ **Comprehensive API documentation**
+- ✅ **Interactive testing** capabilities
+- ✅ **Schema definitions** and examples
+- ✅ **Authentication documentation**
 
 ## 📋 Gereksinimler
 
@@ -60,17 +73,57 @@ npm run dev
 npm start
 ```
 
+**Swagger dokümantasyonu build:**
+```bash
+npm run build-docs
+```
+
+**Swagger dokümantasyonu önizleme:**
+```bash
+npm run preview-docs
+```
+
 **Kod kalitesi kontrolü:**
 ```bash
 npm run lint
 ```
 
-## 📚 API Endpoints
+## 📚 API Dokümantasyonu
+
+### 🌐 Live Swagger UI
+**Production URL**: https://nodejs-hw-mongodb-0xyb.onrender.com/api-docs/
+
+**Local Development**: http://localhost:3001/api-docs/
 
 ### Base URL
 ```
-http://localhost:3001
+Production: https://nodejs-hw-mongodb-0xyb.onrender.com
+Local: http://localhost:3001
 ```
+
+### 🔐 Authentication
+API, JWT tabanlı authentication kullanır. Protected endpoint'lere erişim için:
+```http
+Authorization: Bearer <your-jwt-token>
+```
+
+### 📋 Endpoint Kategorileri
+
+#### **Authentication Endpoints**
+- `POST /auth/register` - Kullanıcı kaydı
+- `POST /auth/login` - Kullanıcı girişi  
+- `POST /auth/logout` - Kullanıcı çıkışı
+- `POST /auth/refresh` - Token yenileme
+- `POST /auth/send-reset-email` - Şifre sıfırlama emaili
+- `POST /auth/reset-pwd` - Şifre sıfırlama
+
+#### **Contact Management Endpoints**
+- `GET /contacts` - Tüm kontakları listele
+- `GET /contacts/{id}` - Tek kontak getir
+- `POST /contacts` - Yeni kontak oluştur
+- `PATCH /contacts/{id}` - Kontak güncelle
+- `DELETE /contacts/{id}` - Kontak sil
+- `POST /contacts/{id}/photo` - Kontak fotoğrafı yükle
 
 ### Endpoints
 
@@ -129,7 +182,7 @@ GET /contacts/:contactId
 }
 ```
 
-## 📝 Data Model
+## 📝 Data Models
 
 ### Contact Schema
 ```javascript
@@ -139,6 +192,32 @@ GET /contacts/:contactId
   email: String (optional),
   isFavourite: Boolean (default: false),
   contactType: String (enum: ['work', 'home', 'personal'], default: 'personal'),
+  photo: String (optional), // Cloudinary URL
+  userId: ObjectId (required), // Reference to User
+  createdAt: Date (auto),
+  updatedAt: Date (auto)
+}
+```
+
+### User Schema
+```javascript
+{
+  name: String (required),
+  email: String (required, unique),
+  password: String (required),
+  createdAt: Date (auto),
+  updatedAt: Date (auto)
+}
+```
+
+### Session Schema
+```javascript
+{
+  userId: ObjectId (required),
+  accessToken: String (required),
+  refreshToken: String (required),
+  accessTokenValidUntil: Date (required),
+  refreshTokenValidUntil: Date (required),
   createdAt: Date (auto),
   updatedAt: Date (auto)
 }
@@ -148,17 +227,43 @@ GET /contacts/:contactId
 
 ```
 nodejs-hw-mongodb/
+├── docs/                     # API Documentation
+│   ├── openapi.yaml         # OpenAPI 3.1.0 specification
+│   └── swagger.json         # Generated Swagger JSON
+├── swagger/                  # Swagger path definitions
+│   └── paths/               # Individual endpoint definitions
+│       ├── auth/            # Authentication endpoints
+│       └── contacts/        # Contact management endpoints
 ├── src/
 │   ├── controllers/          # Request handlers
-│   │   └── contacts.js
+│   │   ├── auth.js          # Authentication controller
+│   │   └── contacts.js      # Contacts controller
 │   ├── db/                   # Database configuration
 │   │   ├── models/           # Mongoose models
-│   │   │   └── Contact.js
+│   │   │   ├── Contact.js   # Contact model
+│   │   │   ├── User.js      # User model
+│   │   │   └── Session.js   # Session model
 │   │   └── initMongoConnection.js
+│   ├── middlewares/          # Express middlewares
+│   │   ├── authenticate.js  # JWT authentication
+│   │   ├── errorHandler.js  # Error handling
+│   │   ├── notFoundHandler.js
+│   │   ├── isValidId.js     # MongoDB ID validation
+│   │   └── upload.js        # File upload handling
 │   ├── routes/               # API routes
-│   │   └── contacts.js
+│   │   ├── auth.js          # Authentication routes
+│   │   ├── contacts.js      # Contact routes
+│   │   └── index.js         # Route aggregation
 │   ├── services/             # Business logic
-│   │   └── contacts.js
+│   │   ├── auth.js          # Authentication services
+│   │   ├── contacts.js      # Contact services
+│   │   └── email.js         # Email services
+│   ├── utils/                # Utility functions
+│   │   ├── ctrlWrapper.js   # Controller wrapper
+│   │   ├── env.js           # Environment utilities
+│   │   ├── parseFilterParams.js
+│   │   └── parsePaginationParams.js
+│   ├── constants/            # Application constants
 │   ├── index.js              # Application entry point
 │   └── server.js             # Express server setup
 ├── .env                      # Environment variables (not in repo)
@@ -167,6 +272,7 @@ nodejs-hw-mongodb/
 ├── .gitignore                # Git ignore rules
 ├── .prettierrc.json          # Prettier configuration
 ├── eslint.config.mjs         # ESLint configuration
+├── redocly.yaml             # Redocly configuration
 ├── package.json              # Project dependencies and scripts
 └── README.md                 # Project documentation
 ```
@@ -187,21 +293,49 @@ nodejs-hw-mongodb/
 - `pino-http` - HTTP logging
 - `pino-pretty` - Log formatlama
 - `dotenv` - Environment variables
+- `bcrypt` - Password hashing
+- `jsonwebtoken` - JWT token management
+- `swagger-ui-express` - Swagger UI integration
+- `multer` - File upload handling
+- `cloudinary` - Image storage service
+- `nodemailer` - Email service
+- `handlebars` - Template engine
 
 ### Geliştirme Bağımlılıkları
 - `nodemon` - Otomatik yeniden başlatma
 - `eslint` - Kod kalitesi kontrol
 - `@eslint/js` - ESLint JavaScript konfigürasyonu
 - `globals` - Global değişkenler tanımları
+- `@redocly/cli` - OpenAPI documentation tools
 
 ## 🌐 Deployment
 
-Bu proje Render.com üzerinde deploy edilebilir:
+### Production URL
+🚀 **Live Demo**: https://nodejs-hw-mongodb-0xyb.onrender.com/api-docs/
 
-1. GitHub'a push edin
-2. Render.com hesabınızda yeni service oluşturun
-3. Environment variables'ı ayarlayın
-4. Deploy edin
+Bu proje Render.com üzerinde deploy edilmiştir:
+
+1. GitHub repository'yi Render.com'a bağlayın
+2. Environment variables'ı Production ortamında ayarlayın:
+   ```env
+   PORT=10000
+   MONGODB_USER=your_mongodb_user
+   MONGODB_PASSWORD=your_mongodb_password
+   MONGODB_URL=your_mongodb_cluster_url
+   MONGODB_DB=your_database_name
+   JWT_SECRET=your_jwt_secret
+   BREVO_API_KEY=your_brevo_api_key
+   CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+   CLOUDINARY_API_KEY=your_cloudinary_api_key
+   CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+   ```
+3. Build command: `npm run build-docs`
+4. Start command: `npm start`
+5. Auto-deploy aktif edilir
+
+### 📊 Swagger Dokümantasyonu
+- **Production**: https://nodejs-hw-mongodb-0xyb.onrender.com/api-docs/
+- **Swagger JSON**: https://nodejs-hw-mongodb-0xyb.onrender.com/swagger.json
 
 ## 🤝 Katkıda Bulunma
 
@@ -221,6 +355,24 @@ Bu proje ISC lisansı altında lisanslanmıştır.
 - Email: ohhamamcioglu@gmail.com
 - GitHub: [@ohhamamcioglu](https://github.com/ohhamamcioglu)
 
+## 🎯 hw7-swagger Özellikleri
+
+Bu versiyon özellikle **hw7-swagger** ödevi için geliştirilmiştir ve şu ek özellikleri içerir:
+
+- ✨ **OpenAPI 3.1.0** tam spesifikasyon desteği
+- 🎨 **Interactive Swagger UI** - Canlı API testi
+- 📚 **Comprehensive Documentation** - Tüm endpoint'ler detaylandırılmış
+- 🔐 **Authentication Flow** - JWT ve session yönetimi
+- 📧 **Email Integration** - Brevo SMTP servisi
+- 📷 **File Upload** - Cloudinary entegrasyonu  
+- 🛠️ **Developer Tools** - Build ve preview scriptleri
+- 🚀 **Production Ready** - Render.com deployment
+
+### � Önemli Linkler
+- **API Dokümantasyonu**: https://nodejs-hw-mongodb-0xyb.onrender.com/api-docs/
+- **OpenAPI Spec**: [docs/openapi.yaml](docs/openapi.yaml)
+- **Swagger JSON**: https://nodejs-hw-mongodb-0xyb.onrender.com/swagger.json
+
 ---
 
-📝 **Not**: Bu proje Node.js ve MongoDB öğrenimi kapsamında geliştirilmiştir.
+�📝 **Not**: Bu proje Node.js, MongoDB ve OpenAPI/Swagger dokümantasyonu öğrenimi kapsamında geliştirilmiştir.
