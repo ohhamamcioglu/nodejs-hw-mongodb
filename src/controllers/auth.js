@@ -3,7 +3,11 @@ import {
   loginUser,
   refreshUserSession,
   logoutUser,
+  requestResetToken,
+  resetPassword,
 } from '../services/auth.js';
+import { sendResetPasswordEmail } from '../services/email.js';
+import createHttpError from 'http-errors';
 
 const REFRESH_TOKEN_VALIDITY = 30 * 24 * 60 * 60 * 1000; // 30 days
 
@@ -81,4 +85,32 @@ export const logoutUserController = async (req, res) => {
   res.clearCookie('refreshToken');
 
   res.status(204).send();
+};
+
+export const sendResetEmailController = async (req, res) => {
+  try {
+    await requestResetToken(req.body.email);
+    await sendResetPasswordEmail(req.body.email);
+    
+    res.status(200).json({
+      status: 200,
+      message: 'Reset password email has been successfully sent.',
+      data: {},
+    });
+  } catch (error) {
+    if (error.status === 404) {
+      throw error;
+    }
+    throw createHttpError(500, 'Failed to send the email, please try again later.');
+  }
+};
+
+export const resetPasswordController = async (req, res) => {
+  await resetPassword(req.body);
+  
+  res.status(200).json({
+    status: 200,
+    message: 'Password has been successfully reset.',
+    data: {},
+  });
 };

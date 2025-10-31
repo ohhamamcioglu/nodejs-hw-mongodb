@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 import createHttpError from 'http-errors';
 
 import { User } from '../db/models/User.js';
@@ -98,4 +99,39 @@ export const findUser = async (filter) => {
 export const findSession = async (filter) => {
   const session = await Session.findOne(filter);
   return session;
+};
+
+export const requestResetToken = async (email) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw createHttpError(404, 'User not found!');
+  }
+  return user;
+};
+
+export const resetPassword = async (payload) => {
+  let email;
+  
+  try {
+    const decoded = jwt.verify(payload.token, process.env.JWT_SECRET);
+    email = decoded.email;
+  } catch {
+    throw createHttpError(401, 'Token is expired or invalid.');
+  }
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw createHttpError(404, 'User not found!');
+  }
+
+  const encryptedPassword = await bcrypt.hash(payload.password, 10);
+
+  await User.updateOne(
+    { _id: user._id },
+    { password: encryptedPassword }
+  );
+
+  await Session.deleteMany({ userId: user._id });
+
+  return user;
 };
