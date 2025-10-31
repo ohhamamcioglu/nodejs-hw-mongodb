@@ -111,7 +111,7 @@ export const requestResetToken = async (email) => {
 
 export const resetPassword = async (payload) => {
   let email;
-  
+
   try {
     const decoded = jwt.verify(payload.token, process.env.JWT_SECRET);
     email = decoded.email;

@@ -17,7 +17,9 @@ export const authenticate = async (req, res, next) => {
     return;
   }
 
+  console.log('[AUTH DEBUG] Looking for token:', token);
   const session = await findSession({ accessToken: token });
+  console.log('[AUTH DEBUG] Found session:', session ? 'YES' : 'NO');
 
   if (!session) {
     next(createHttpError(401, 'Session not found'));
