@@ -36,9 +36,9 @@ export const setupServer = () => {
   // Public Routes
   app.get('/', (req, res) => {
     res.json({
-      message: 'Node.js MongoDB API - hw6-email-and-images',
+      message: 'Node.js MongoDB API - hw7-swagger',
       version: '1.0.0',
-      status: 'API is running successfully!',
+      status: 'API is running successfully with Swagger documentation!',
       endpoints: {
         auth: {
           register: 'POST /auth/register',
@@ -54,6 +54,9 @@ export const setupServer = () => {
           getById: 'GET /contacts/:id (Protected)',
           update: 'PATCH /contacts/:id (Protected, supports photo upload)',
           delete: 'DELETE /contacts/:id (Protected)'
+        },
+        documentation: {
+          swagger: 'GET /api-docs - Interactive API Documentation'
         }
       }
     });

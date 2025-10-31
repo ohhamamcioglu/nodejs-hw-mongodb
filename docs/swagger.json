@@ -2,12 +2,12 @@
   "openapi": "3.1.0",
   "info": {
     "version": "1.0.0",
-    "title": "Node.js MongoDB API - hw6-email-and-images",
+    "title": "Node.js MongoDB API - hw7-swagger",
     "license": {
       "name": "Apache 2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "description": "A comprehensive API for managing contacts with authentication, email services, and photo upload capabilities. Built with Node.js, Express, MongoDB, and integrated with Brevo email service and Cloudinary for image management.\n"
+    "description": "A comprehensive API for managing contacts with authentication, email services, and photo upload capabilities. Built with Node.js, Express, MongoDB, and integrated with Brevo email service and Cloudinary for image management. This API includes complete Swagger/OpenAPI documentation with interactive testing capabilities.\n"
   },
   "servers": [
     {
