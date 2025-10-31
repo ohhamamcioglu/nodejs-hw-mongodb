@@ -1,0 +1,84 @@
+tags:
+  - Auth
+summary: Send password reset email
+operationId: sendResetEmail
+description: Send a password reset email with JWT token to the user.
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - email
+        properties:
+          email:
+            type: string
+            format: email
+            description: User's email address
+            example: "john@example.com"
+responses:
+  '200':
+    description: Reset password email sent successfully
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: "Reset password email has been successfully sent."
+            data:
+              type: object
+              example: {}
+  '400':
+    description: Bad request - Validation error
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 400
+            message:
+              type: string
+              example: "Validation error"
+            data:
+              type: object
+              example: {"email": "Email is required"}
+  '404':
+    description: User not found
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 404
+            message:
+              type: string
+              example: "User not found!"
+            data:
+              type: string
+              example: "User not found!"
+  '500':
+    description: Failed to send email
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 500
+            message:
+              type: string
+              example: "Failed to send the email, please try again later."
+            data:
+              type: string
+              example: "Failed to send the email, please try again later."
