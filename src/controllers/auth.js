@@ -98,6 +98,7 @@ export const sendResetEmailController = async (req, res) => {
       data: {},
     });
   } catch (error) {
+    console.log('Send reset email error:', error);
     if (error.status === 404) {
       throw error;
     }

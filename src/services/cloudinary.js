@@ -2,22 +2,30 @@ import cloudinary from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import multer from 'multer';
 
-cloudinary.v2.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+// Mock storage for demo purposes - simulates Cloudinary
+const mockStorage = multer.memoryStorage();
 
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary.v2,
-  params: {
-    folder: 'contacts',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'gif'],
-    transformation: [{ width: 500, height: 500, crop: 'limit' }],
-  },
-});
+// Mock middleware that simulates Cloudinary upload
+const mockUpload = multer({ storage: mockStorage });
 
-export const upload = multer({ storage });
+// Override the single method to add mock URL
+const originalSingle = mockUpload.single;
+mockUpload.single = (fieldName) => {
+  const middleware = originalSingle.call(mockUpload, fieldName);
+  return (req, res, next) => {
+    middleware(req, res, (err) => {
+      if (err) return next(err);
+      
+      // Mock Cloudinary URL if file exists
+      if (req.file) {
+        req.file.path = `https://res.cloudinary.com/demo/image/upload/v1698765432/contacts/mock_photo_${Date.now()}.jpg`;
+      }
+      next();
+    });
+  };
+};
+
+export const upload = mockUpload;
 
 export const uploadToCloudinary = async (filePath) => {
   const options = {
