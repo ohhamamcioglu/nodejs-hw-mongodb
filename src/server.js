@@ -42,7 +42,7 @@ export const setupServer = () => {
       endpoints: {
         auth: {
           register: 'POST /auth/register',
-          login: 'POST /auth/login', 
+          login: 'POST /auth/login',
           refresh: 'POST /auth/refresh',
           logout: 'POST /auth/logout',
           sendResetEmail: 'POST /auth/send-reset-email',
@@ -59,11 +59,13 @@ export const setupServer = () => {
     });
   });
 
-  // API Documentation
+  // API Documentation (Public)
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-  // Protected Routes
+  // Auth Routes (Public)
   app.use(authRouter);
+
+  // Protected Routes
   app.use(contactsRouter);
 
   // 404 handler for non-existing routes
