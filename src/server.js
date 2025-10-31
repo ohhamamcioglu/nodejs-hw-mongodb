@@ -26,7 +26,7 @@ export const setupServer = () => {
   // Public Routes
   app.get('/', (req, res) => {
     res.json({
-      message: 'Node.js MongoDB API - hw5-auth',
+      message: 'Node.js MongoDB API - hw6-email-and-images',
       version: '1.0.0',
       status: 'API is running successfully!',
       endpoints: {
@@ -34,13 +34,15 @@ export const setupServer = () => {
           register: 'POST /auth/register',
           login: 'POST /auth/login', 
           refresh: 'POST /auth/refresh',
-          logout: 'POST /auth/logout'
+          logout: 'POST /auth/logout',
+          sendResetEmail: 'POST /auth/send-reset-email',
+          resetPassword: 'POST /auth/reset-pwd'
         },
         contacts: {
           list: 'GET /contacts (Protected)',
-          create: 'POST /contacts (Protected)',
+          create: 'POST /contacts (Protected, supports photo upload)',
           getById: 'GET /contacts/:id (Protected)',
-          update: 'PATCH /contacts/:id (Protected)',
+          update: 'PATCH /contacts/:id (Protected, supports photo upload)',
           delete: 'DELETE /contacts/:id (Protected)'
         }
       }
