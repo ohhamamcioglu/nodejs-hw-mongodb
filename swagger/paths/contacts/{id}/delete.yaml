@@ -1,0 +1,51 @@
+tags:
+  - Contacts
+summary: Delete contact by ID
+operationId: deleteContactById
+description: Delete a specific contact by its ID. Requires authentication.
+security:
+  - bearerAuth: []
+parameters:
+  - name: contactId
+    in: path
+    required: true
+    description: The ID of the contact to delete
+    schema:
+      type: string
+      format: mongodb-objectid
+      example: "507f1f77bcf86cd799439011"
+responses:
+  '204':
+    description: Successfully deleted contact (no content returned)
+  '401':
+    description: Unauthorized - Invalid or missing authentication
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 401
+            message:
+              type: string
+              example: "Unauthorized"
+            data:
+              type: string
+              example: "Unauthorized"
+  '404':
+    description: Contact not found
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 404
+            message:
+              type: string
+              example: "Contact not found"
+            data:
+              type: string
+              example: "Contact not found"

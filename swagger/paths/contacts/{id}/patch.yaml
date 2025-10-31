@@ -1,0 +1,173 @@
+tags:
+  - Contacts
+summary: Update contact by ID
+operationId: updateContactById
+description: Update a specific contact by its ID with optional photo upload. Requires authentication.
+security:
+  - bearerAuth: []
+parameters:
+  - name: contactId
+    in: path
+    required: true
+    description: The ID of the contact to update
+    schema:
+      type: string
+      format: mongodb-objectid
+      example: "507f1f77bcf86cd799439011"
+requestBody:
+  required: false
+  content:
+    multipart/form-data:
+      schema:
+        type: object
+        properties:
+          name:
+            type: string
+            description: Contact's full name
+            example: "John Doe Updated"
+          phoneNumber:
+            type: string
+            description: Contact's phone number
+            example: "+1234567890"
+          email:
+            type: string
+            format: email
+            description: Contact's email address
+            example: "john.updated@example.com"
+          isFavourite:
+            type: boolean
+            description: Whether the contact is marked as favourite
+            example: true
+          contactType:
+            type: string
+            enum: [work, home, personal]
+            description: Type of contact
+            example: "personal"
+          photo:
+            type: string
+            format: binary
+            description: Contact's photo file (JPEG, PNG)
+    application/json:
+      schema:
+        type: object
+        properties:
+          name:
+            type: string
+            description: Contact's full name
+            example: "John Doe Updated"
+          phoneNumber:
+            type: string
+            description: Contact's phone number
+            example: "+1234567890"
+          email:
+            type: string
+            format: email
+            description: Contact's email address
+            example: "john.updated@example.com"
+          isFavourite:
+            type: boolean
+            description: Whether the contact is marked as favourite
+            example: true
+          contactType:
+            type: string
+            enum: [work, home, personal]
+            description: Type of contact
+            example: "personal"
+responses:
+  '200':
+    description: Successfully updated contact
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: "Successfully patched a contact!"
+            data:
+              type: object
+              properties:
+                _id:
+                  type: string
+                  example: "507f1f77bcf86cd799439011"
+                name:
+                  type: string
+                  example: "John Doe Updated"
+                phoneNumber:
+                  type: string
+                  example: "+1234567890"
+                email:
+                  type: string
+                  example: "john.updated@example.com"
+                isFavourite:
+                  type: boolean
+                  example: true
+                contactType:
+                  type: string
+                  enum: [work, home, personal]
+                  example: "personal"
+                photo:
+                  type: string
+                  example: "https://res.cloudinary.com/demo/image/upload/v1698765432/contacts/updated_photo.jpg"
+                userId:
+                  type: string
+                  example: "507f1f77bcf86cd799439012"
+                createdAt:
+                  type: string
+                  format: date-time
+                  example: "2024-10-31T12:00:00.000Z"
+                updatedAt:
+                  type: string
+                  format: date-time
+                  example: "2024-10-31T12:30:00.000Z"
+  '400':
+    description: Bad request - Validation error
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 400
+            message:
+              type: string
+              example: "Validation error"
+            data:
+              type: object
+              example: {"name": "Name must be a string"}
+  '401':
+    description: Unauthorized - Invalid or missing authentication
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 401
+            message:
+              type: string
+              example: "Unauthorized"
+            data:
+              type: string
+              example: "Unauthorized"
+  '404':
+    description: Contact not found
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 404
+            message:
+              type: string
+              example: "Contact not found"
+            data:
+              type: string
+              example: "Contact not found"

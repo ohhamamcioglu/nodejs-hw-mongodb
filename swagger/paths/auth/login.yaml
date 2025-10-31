@@ -1,0 +1,87 @@
+tags:
+  - Auth
+summary: Login user
+operationId: loginUser
+description: Authenticate user and get access token and session cookies.
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        type: object
+        required:
+          - email
+          - password
+        properties:
+          email:
+            type: string
+            format: email
+            description: User's email address
+            example: "john@example.com"
+          password:
+            type: string
+            description: User's password
+            example: "password123"
+responses:
+  '200':
+    description: Successfully logged in
+    headers:
+      Set-Cookie:
+        description: Session and refresh token cookies
+        schema:
+          type: array
+          items:
+            type: string
+        example: 
+          - sessionId=j%3A%22507f1f77bcf86cd799439011%22; Path=/; Expires=Sun, 30 Nov 2025 12:00:00 GMT; HttpOnly
+          - refreshToken=abc123def456; Path=/; Expires=Sun, 30 Nov 2025 12:00:00 GMT; HttpOnly
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: "Successfully logged in an user!"
+            data:
+              type: object
+              properties:
+                accessToken:
+                  type: string
+                  description: Bearer token for API authentication
+                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  '400':
+    description: Bad request - Validation error
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 400
+            message:
+              type: string
+              example: "Validation error"
+            data:
+              type: object
+              example: {"email": "Email is required"}
+  '401':
+    description: Unauthorized - Invalid credentials
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 401
+            message:
+              type: string
+              example: "Unauthorized"
+            data:
+              type: string
+              example: "Unauthorized"
